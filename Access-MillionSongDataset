@@ -1,0 +1,36 @@
+The Million Song Dataset is a freely-available collection of audio features and metadata for a million contemporary popular music tracks.
+
+The dataset is available as an Amazon Public Dataset snapshot (https://aws.amazon.com/datasets/million-song-dataset/) 
+which can easily be attached to an Amazon EC2 virtual machine to run your experiments in the cloud. 
+You simply set up an EBS disk instance from snap-5178cf30 
+
+For me, when I launch an EC2 virtual machine running Ubuntu, then create an EBS instance from that snapshot, then attach the EBS to the virtual machine,
+it appears as /dev/xvdf from within Ubuntu. Then you just have to mount it:
+
+ubuntu@ip-xxx:~$ sudo mkdir /mnt/snap
+ubuntu@ip-xxx:~$ sudo mount -t ext4 /dev/xvdf /mnt/snap
+ubuntu@ip-xxx:~$ ls /mnt/snap
+AdditionalFiles  data  LICENSE  lost+found  README
+ubuntu@ip-xxx:~$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/xvda1      7.8G  808M  6.6G  11% /
+none            4.0K     0  4.0K   0% /sys/fs/cgroup
+udev            492M   12K  492M   1% /dev
+tmpfs           100M  328K   99M   1% /run
+none            5.0M     0  5.0M   0% /run/lock
+none            497M     0  497M   0% /run/shm
+none            100M     0  100M   0% /run/user
+/dev/xvdf       493G  272G  196G  59% /mnt/snap
+The 493G partition at the end (of which only 272G used) is the MSD data.
+
+Note that although there's a free tier for EC2 processors, Amazon charges for EBS usage; 
+this 500G partition costs something like $10/week for the time it is in existence (whether or not it's attached to a live VM).
+
+To copy this data from your EC2 Instance, access the University network from the instance, and scp the files accordingly to your user server:
+
+scp -r ~/dev/xvdf benjamin.carcamo@ssh.inf.santiago.usm.cl:/home/data
+ 
+Then, scp again from the user server to hadoop-master.
+ 
+scp -r ~/home/data hadoop-master:/data
+ 
