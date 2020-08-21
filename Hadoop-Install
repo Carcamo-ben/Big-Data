@@ -1,0 +1,119 @@
+
+#update the system
+yum clean all
+yum install epel-release -y
+yum update -y
+
+#install java wget ant
+yum install -y java-1.8.0-openjdk wget ant
+java -version
+
+#Create Hadoop user
+useradd -m -d /home/hadoop -s /bin/bash hadoop
+passwd hadoop
+su hadoop
+cd
+#Enable passwordless ssh
+ssh-keygen -t rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+ssh localhost
+
+#Install Hadoop 3.2.1
+wget https://downloads.apache.org/hadoop/common/stable/hadoop-3.2.1.tar.gz
+tar -zxvf hadoop-3.2.1.tar.gz 
+mv hadoop-3.2.1 hadoop
+
+#Set environment variable uses by Hadoop
+vi ~/.bashrc
+
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.242.b08-0.el7_7.x86_64/jre   ## Change it according to your system
+export HADOOP_HOME=/home/hadoop/hadoop   ## Change it according to your system
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+
+#exit and access user hadoop again
+exit
+su hadoop
+cd
+
+#Modify Configuration files and change JAVA_HOME
+vi $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.242.b08-0.el7_7.x86_64/jre
+
+#check hadoop version
+hadoop version
+
+#Setup Hadoop Configuration Files
+cd $HADOOP_HOME/etc/hadoop
+vi core-site.xml
+
+<configuration>
+    <property>
+        <name>fs.default.name</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+vi hdfs-site.xml
+
+<configuration>
+        <property>
+                <name>dfs.replication</name>
+                <value>1</value>
+        </property>
+        <property>
+                <name>dfs.name.dir</name>
+                <value>file:///home/hadoop/hadoopdata/hdfs/namenode</value>
+        </property>
+        <property>
+                <name>dfs.data.dir</name>
+                <value>file:///home/hadoop/hadoopdata/hdfs/datanode</value>
+        </property>
+</configuration>
+
+#Create NameNode and DataNode directories in hadoop user’s home directory.
+mkdir -p ~/hadoopdata/hdfs/{namenode,datanode}
+
+vi mapred-site.xml
+
+<configuration>
+        <property>
+                <name>mapreduce.framework.name</name>
+                <value>yarn</value>
+        </property>
+</configuration>
+
+vi yarn-site.xml
+
+<configuration>
+        <property>
+                <name>yarn.nodemanager.aux-services</name>
+                <value>mapreduce_shuffle</value>
+        </property>
+</configuration>
+
+#check the storage directory
+hdfs namenode -format
+
+#In dir /home/hadoop/hadoop/sbin or $HADOOP_HOME/sbin/, run start-dfs.sh (NameNode daemon and DataNode daemon) default port:9870
+start-dfs.sh
+
+#start-yarn (Start ResourceManager daemon and NodeManager daemon) port:8088
+start-yarn.sh
+
+#Test Hadoop Single Node Cluster Setup
+hdfs dfs -mkdir -p /user/ts
+
+#Test upload a file into HDFS directory
+hdfs dfs -put ~/.bashrc /user/ts
+
+#To upload MilliongSongDataset files to HDFS
+
+hdfs dfs -put ~/data/ /user/ts
