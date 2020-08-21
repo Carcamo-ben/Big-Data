@@ -7,5 +7,5 @@ for line in sys.stdin:#Read input from mapper
 	else
 		artists[name]=[points]
 
-for artist in artists:#Print all songs, and their start and end points for the preview
+for artist in artists:#Print all artists and their songs, with start and end points for the preview
 	print (artist, artists[artist])
