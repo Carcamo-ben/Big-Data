@@ -1,0 +1,25 @@
+#To gain access to the servers, please connect to the University network with your username:
+
+ssh benjamin.carcamo@ssh.inf.santiago.usm.cl #Change benjamin.carcamo to your username
+
+#To connect to the master node, ssh like so:
+
+ssh root@dist20.inf.santiago.usm.cl #Ip address 10.6.40.160
+
+#To connect to worker nodes, ssh like so:
+
+ssh root@dist16.inf.santiago.usm.cl #Ip address 10.6.40.156
+ssh root@dist17.inf.santiago.usm.cl #Ip address 10.6.40.157
+ssh root@dist18.inf.santiago.usm.cl #Ip address 10.6.40.158
+ssh root@dist19.inf.santiago.usm.cl #Ip address 10.6.40.159
+
+#The pasword for all servers is sDist00
+
+# This allows you to easily access nodes from your server:
+vim /etc/hosts
+
+10.6.40.160 hadoop-master
+10.6.40.156 hadoop-slave-1
+10.6.40.157 hadoop-slave-2
+10.6.40.158 hadoop-slave-3
+10.6.40.159 hadoop-slave-4
