@@ -1,8 +1,11 @@
 import sys
-l=[]#List for storing songs
+artists={}#dictionary for storing the songs of each artist
 for line in sys.stdin:#Read input from mapper
-	(name, points)=line.strip().split(",")
-	l.append((name,points))
+	name, points=line.strip().split(",")
+	if name in artists:
+		artists[name].append(points)
+	else
+		artists[name]=[points]
 
-for song in l:#Print all songs, and their start and end points for the preview
-	print (song)
+for artist in artists:#Print all songs, and their start and end points for the preview
+	print (artist, artists[artist])
